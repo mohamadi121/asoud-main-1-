@@ -17,25 +17,25 @@ services:
         env_file:
             - ./.env
         depends_on:
-            - db
+            - db2
             - redis
         networks:
             - main_network
 
-    db:
-        container_name: asoud_db
-        image: postgres:alpine
-        restart: always
-        ports:
-            - 5432:5432
-        environment:
-            POSTGRES_DB: ${DATABASE_NAME}
-            POSTGRES_USER: ${DATABASE_USERNAME}
-            POSTGRES_PASSWORD: ${DATABASE_PASSWORD}
-        volumes:
-            - db_data:/var/lib/postgresql/data:rw
-        networks:
-            - main_network
+    db2:
+         container_name: asoud_db2
+         image: postgres:alpine
+         restart: always
+         ports:
+             - 5432:5432
+         environment:
+             POSTGRES_DB: ${DATABASE_NAME2}
+             POSTGRES_USER: ${DATABASE_USERNAME2}
+             POSTGRES_PASSWORD: ${DATABASE_PASSWORD2}
+         volumes:
+             - db_data:/var/lib/postgresql/data:rw
+         networks:
+             - main_network
 
     redis:
         container_name: asoud_redis
