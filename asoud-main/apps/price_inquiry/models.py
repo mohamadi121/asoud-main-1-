@@ -17,7 +17,7 @@ def upload_inquiry_answer_image(instance, filename):
 
 class Inquiry(BaseModel):
     GOOD = 'good'
-    SERVICE = 'serivce'
+    SERVICE = 'service'
 
     TYPE_CHOICES = [
         (GOOD, _('Good')),
