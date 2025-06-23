@@ -63,22 +63,21 @@ class ProductDiscountCreateAPIView(views.APIView):
             data=request.data,
             context={'request': request},
         )
+        print("^^^^^^^^^^^^^^^^^^^^^")
+        # try:
+        serializer.is_valid()
+        serializer.save(product=product)
 
-        if serializer.is_valid():
-            serializer.save(
-                product=product,
-            )
-
-            success_response = ApiResponse(
+        success_response = ApiResponse(
                 success=True,
                 code=200,
                 data={
                     **serializer.data,
-                },
+                    },
                 message='ProductDiscount created successfully.',
-            )
+                )
 
-            return Response(success_response, status=status.HTTP_201_CREATED)
+        return Response(success_response, status=status.HTTP_201_CREATED)
 
 
 class ProductListAPIView(views.APIView):
