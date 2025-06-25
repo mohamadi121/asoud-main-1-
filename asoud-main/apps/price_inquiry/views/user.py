@@ -35,6 +35,46 @@ class InquiryCreateView(views.APIView):
             ),
             status=status.HTTP_201_CREATED
         )
+    
+class InquiryDeleteView(views.APIView):
+    def post(self, request, pk):
+        if request.user != Inquiry.user:
+            return Response(
+                ApiResponse(
+                    success=False,
+                    code=403,
+                    error="UnAuthorized"
+                ),
+                status=status.HTTP_403_FORBIDDEN
+            )
+        try:
+            Inquiry.objects.delete(id=pk)
+            return Response(
+            ApiResponse(
+                success=True,
+                code=200,
+                data={}
+            ),
+            status=status.HTTP_200_OK
+        )
+        except Inquiry.DoesNotExist:
+            return Response(
+                ApiResponse(
+                    success=False,
+                    code=404,
+                    error="Inquiry Not Found"
+                ),
+                status=status.HTTP_404_NOT_FOUND
+            )
+
+        return Response(
+            ApiResponse(
+                success=True,
+                code=201,
+                data=serialized_data
+            ),
+            status=status.HTTP_201_CREATED
+        )
 
 class InquiryDeleteView(views.APIView):
     def post(self, request, pk=None):
