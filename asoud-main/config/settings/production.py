@@ -6,16 +6,31 @@
 
 import os
 from .base import *
+import json
+from django.conf import settings
+
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
+ALLOWED_HOSTS_FILE = os.path.join(settings.BASE_DIR, 'allowed_hosts.json')
+def get_persisted_allowed_hosts():
+    try:
+        with open(ALLOWED_HOSTS_FILE, 'r') as f:
+            return json.load(f)
+    except (FileNotFoundError, json.JSONDecodeError):
+        return settings.ALLOWED_HOSTS
+
 # TODO: Update this to match your domain(s)
-ALLOWED_HOSTS = [
+BASE_ALLOWED_HOSTS = [
     '37.32.11.190',
     'asoud.ir',
+    'app.asoud.ir',
+    'asoud.asoud.ir',
+    'sinahashemi1.asoud.ir',
+    '0019431351.asoud.ir'
 ]
-
+ALLOWED_HOSTS = get_persisted_allowed_hosts() + BASE_ALLOWED_HOSTS
 # Use a more secure secret key in production
 SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY')
 

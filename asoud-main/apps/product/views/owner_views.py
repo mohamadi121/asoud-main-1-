@@ -63,11 +63,11 @@ class ProductDiscountCreateAPIView(views.APIView):
             data=request.data,
             context={'request': request},
         )
-        print("^^^^^^^^^^^^^^^^^^^^^")
-        # try:
         serializer.is_valid()
         serializer.save(product=product)
-
+        percentage = serializer.validated_data.get('percentage')
+        product.main_price = product.main_price - (product.main_price * percentage / 100)
+        product.save()
         success_response = ApiResponse(
                 success=True,
                 code=200,

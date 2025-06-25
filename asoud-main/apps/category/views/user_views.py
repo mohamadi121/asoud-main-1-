@@ -3,8 +3,13 @@ from rest_framework.response import Response
 
 from utils.response import ApiResponse
 
-from apps.category.models import Group, Category, SubCategory
-from apps.category.serializers.user_serializers import GroupListSerializer, CategoryListSerializer, SubCategoryListSerializer
+from apps.category.models import (
+    Group, Category, SubCategory,
+    ProductGroup, ProductCategory, ProductSubCategory)
+from apps.category.serializers.user_serializers import (
+    GroupListSerializer, CategoryListSerializer, SubCategoryListSerializer,
+    ProductGroupListSerializer, ProductCategoryListSerializer,
+    ProductSubCategoryListSerializer)
 
 
 class GroupListAPIView(views.APIView):
@@ -75,6 +80,88 @@ class SubCategoryListAPIView(views.APIView):
 
         serializer = SubCategoryListSerializer(
             sub_category_list,
+            many=True,
+            context={"request": request},
+        )
+
+        success_response = ApiResponse(
+            success=True,
+            code=200,
+            data=serializer.data,
+            message='Data retrieved successfully'
+        )
+
+        return Response(success_response)
+    
+
+class ProductGroupListAPIView(views.APIView):
+    def get(self, request, format=None):
+        product_group_list = ProductGroup.objects.all()
+
+        serializer = ProductGroupListSerializer(
+            product_group_list,
+            many=True,
+            context={"request": request},
+        )
+
+        success_response = ApiResponse(
+            success=True,
+            code=200,
+            data=serializer.data,
+            message='Data retrieved successfully'
+        )
+
+        return Response(success_response)
+
+
+class ProductCategoryListAPIView(views.APIView):
+    def get(self, request, pk, format=None):
+        try:
+            product_group_obj = ProductGroup.objects.get(id=pk)
+        except:
+            return Response(
+                ApiResponse(
+                    success=False,
+                    code=404,
+                    error="Product Group Not Found"
+                )
+            )
+        
+        product_category_list = ProductCategory.objects.filter(product_group=product_group_obj)
+
+        serializer = ProductCategoryListSerializer(
+            product_category_list,
+            many=True,
+            context={"request": request},
+        )
+
+        success_response = ApiResponse(
+            success=True,
+            code=200,
+            data=serializer.data,
+            message='Data retrieved successfully'
+        )
+
+        return Response(success_response)
+
+
+class ProductSubCategoryListAPIView(views.APIView):
+    def get(self, request, pk, format=None):
+        try:
+            product_category_obj = ProductCategory.objects.get(id=pk)
+        except:
+            return Response(
+                ApiResponse(
+                    success=False,
+                    code=404,
+                    error="Category Not Found"
+                )
+            )
+        
+        product_sub_category_list = ProductSubCategory.objects.filter(product_category=product_category_obj)
+
+        serializer = SubCategoryListSerializer(
+            product_sub_category_list,
             many=True,
             context={"request": request},
         )

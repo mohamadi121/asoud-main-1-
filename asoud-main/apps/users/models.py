@@ -140,3 +140,60 @@ class UserColleague(BaseModel):
 
     def __str__(self):
         return self.user
+
+
+class BankInfo(BaseModel):
+    name = models.CharField(max_length=16, unique=True)
+    logo = models.ImageField(
+        upload_to='bank/logo/',
+        blank=True,
+        null=True,
+        verbose_name=_('logo'),
+    )
+    def __str__(self):
+        return self.name
+    
+
+class UserBankInfo(BaseModel):
+    user = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name='banks',
+        verbose_name=_('User'),
+    )
+    bank_info = models.ForeignKey(
+        BankInfo,
+        on_delete=models.CASCADE,
+        related_name='bankinfoes',
+        verbose_name=_('Bank info'),
+    )
+    card_number = models.CharField(
+        unique=True,
+        max_length=16,
+        verbose_name=_('Card number'),
+    )
+    account_number = models.CharField(
+        unique=True,
+        max_length=32,
+        verbose_name=_('Account number'),
+    )
+    iban = models.CharField(
+        max_length=32,
+        blank=True,
+        null=True,
+        verbose_name=_('Iban number'),
+    )
+    full_name = models.CharField(
+        max_length=128,
+        verbose_name=_('Full name'),
+    )
+    branch_id = models.PositiveSmallIntegerField(
+        verbose_name=_('Branch id'),
+    )
+    branch_name = models.CharField(
+        max_length=20,
+        verbose_name=_('Branch name'),
+    )
+    
+    def __str__(self):
+        return self.card_number

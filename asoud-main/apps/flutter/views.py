@@ -43,7 +43,6 @@ class MarketDetailView(views.APIView):
             )
         
         serializer = MarketListSerializer(market)
-
         return Response(
             ApiResponse(
                 success=True,

@@ -1,5 +1,6 @@
-from rest_framework import views, status, permissions
+from rest_framework import views, viewsets, status, permissions
 from rest_framework.response import Response
+from rest_framework.decorators import action
 from utils.response import ApiResponse
 from apps.cart.models import (
     Order,
@@ -7,12 +8,107 @@ from apps.cart.models import (
 )
 from apps.cart.serializers.user import(
     OrderSerializer,
+    Order2Serializer,
+    OrderItem2Serializer,
     OrderCreateSerializer,
+    OrderCheckOutSerializer,
     OrderItemSerializer
 )
 from asgiref.sync import async_to_sync
 from channels.layers import get_channel_layer
 
+
+class CartViewSet(viewsets.ViewSet):
+    permission_classes = [permissions.IsAuthenticated]
+    
+    def get_order(self, request):
+        """Helper method to get or create order"""
+        return Order.get_or_create_order(request.user)
+    
+    def list(self, request):
+        """Get order contents"""
+        order = self.get_order(request)
+        serializer = Order2Serializer(order)
+        return Response(serializer.data)
+    
+    def add_item(self, request):
+        """Add item to cart"""
+        order = self.get_order(request)
+        serializer = OrderItem2Serializer(data=request.data, context={'request': request})
+        serializer.is_valid(raise_exception=True)
+        product = serializer.validated_data.get('product', None)
+        affiliate = serializer.validated_data.get('affiliate', None)
+        quantity = serializer.validated_data.get('quantity', None)
+        if product:
+            if existing_product := order.items.filter(product=product).first():
+                existing_product.quantity += quantity
+                existing_product.save()
+                serializer = OrderItem2Serializer(existing_product)
+                return Response(serializer.data, status=status.HTTP_201_CREATED)
+            serializer.save(order=order)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        if affiliate:
+            if existing_affiliate := order.items.filter(affiliate=affiliate).first():
+                existing_affiliate.quantity += quantity
+                existing_affiliate.save()
+                serializer = OrderItem2Serializer(existing_affiliate) 
+                return Response(serializer.data, status=status.HTTP_201_CREATED)
+            serializer.save(order=order)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+           
+    def update_item(self, request, pk=None):
+        """Update item quantity in cart"""
+        order = self.get_order(request)
+        try:
+            item = order.items.get(pk=pk)
+        except OrderItem.DoesNotExist:
+            return Response(
+                {"error": "Item not found in order"}, 
+                status=status.HTTP_404_NOT_FOUND
+            )
+        
+        serializer = OrderItem2Serializer(item, data=request.data, partial=True)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        
+        return Response(serializer.data)
+    
+    def remove_item(self, request, pk=None):
+        """Remove item from order"""
+        order = self.get_order(request)
+        try:
+            item = order.items.get(pk=pk)
+            item.delete()
+            serializer = Order2Serializer(order)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        except OrderItem.DoesNotExist:
+            return Response(
+                {"error": "Item not found in order"}, 
+                status=status.HTTP_404_NOT_FOUND
+            )
+        
+    def checkout(self, request):
+        order = self.get_order(request)
+        serializer = OrderCheckOutSerializer(data=request.data, context={'request': request})
+        serializer.is_valid(raise_exception=True)
+        
+        # Check if item already exists in cart
+        if not order.items.exists():
+            return Response(
+                {"error": "order is empty"}, 
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        
+        order.status = Order.PENDING 
+        order.description = serializer.validated_data.get('description', 'Order placed')
+        order.type = serializer.validated_data.get('type', Order.ONLINE)
+        order.save()
+
+        serializer = Order2Serializer(order)
+        return Response(
+            {"message": "Order placed successfully", "order": serializer.data},
+            status=status.HTTP_200_OK
+        )
 
 class OrderCreateView(views.APIView):
     def post(self, request):

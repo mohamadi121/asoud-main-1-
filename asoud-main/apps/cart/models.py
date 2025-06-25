@@ -82,6 +82,19 @@ class Order(BaseModel):
     
     def total_items(self):
         return sum(item.quantity for item in self.items.all())
+    
+    @classmethod
+    def get_or_create_order(cls, user):
+        """Get or create a order (pending order) for the user"""
+        order, created = cls.objects.get_or_create(
+            user=user,
+            status=cls.PENDING,
+            defaults={
+                'type': cls.ONLINE,  # default to online, can be changed at checkout
+                'description': 'Shopping order'
+            }
+        )
+        return order
 
 class OrderItem(BaseModel):
     order = models.ForeignKey(

@@ -1,6 +1,9 @@
 from rest_framework import serializers
 
-from apps.category.models import Group, Category, SubCategory
+from apps.category.models import (
+    Group, Category, SubCategory,
+    ProductGroup, ProductCategory, ProductSubCategory
+    )
 
 
 class GroupListSerializer(serializers.ModelSerializer):
@@ -24,6 +27,37 @@ class CategoryListSerializer(serializers.ModelSerializer):
 class SubCategoryListSerializer(serializers.ModelSerializer):
     class Meta:
         model = SubCategory
+        fields = [
+            'id',
+            'title',
+        ]
+
+
+class ProductGroupListSerializer(serializers.ModelSerializer):
+    sub_category = serializers.SerializerMethodField()
+    class Meta:
+        model = ProductGroup
+        fields = [
+            'id',
+            'sub_category',
+        ]
+    def get_sub_category(self, obj):
+        return obj.sub_category.title
+
+
+
+class ProductCategoryListSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ProductCategory
+        fields = [
+            'id',
+            'title',
+        ]
+
+
+class ProductSubCategoryListSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ProductSubCategory
         fields = [
             'id',
             'title',

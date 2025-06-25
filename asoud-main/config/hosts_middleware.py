@@ -37,20 +37,22 @@ class HostsRequestMiddleware(HostsBaseMiddleware):
 
         subdomain = request_host.split('.')[0]
         domains = settings.ALLOWED_HOSTS
-        
-        if any([subdomain in domain for domain in domains]):
-            return [host for host in host_patterns if host.regex==''][0], {}    # main
+        #if any([subdomain in domain for domain in domains]):
+            #print('88888', subdomain)
+            #return [host for host in host_patterns if host.regex==''][0], {}    # main
         
         # Check if the request host matches any subdomain pattern
         for host in host_patterns:
-            if host.regex == r'':
-                return host, {}
+            #if host.regex == r'':
+                #print("111", host, "reg:", host.regex)
+                #return host, {}
             
             compiled_regex = re.compile(host.regex)
-            if compiled_regex.match(request_host):  # Use the compiled regex to match
+            if request_host != 'asoud.ir' and compiled_regex.match(request_host):  # Use the compiled regex to match
                 return host, compiled_regex.match(request_host).groupdict()
             
-
+        if any([subdomain in domain for domain in domains]):
+            return [host for host in host_patterns if host.regex==''][0], {}    # main
         # Fall back to the default host
         try:
             return get_host(settings.DEFAULT_HOST), {}

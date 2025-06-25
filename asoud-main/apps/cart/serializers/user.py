@@ -8,6 +8,64 @@ from apps.affiliate.models import AffiliateProduct
 from django.db import transaction
 
 
+class OrderItem2Serializer(serializers.ModelSerializer):
+    class Meta:
+        model = OrderItem
+        fields = (
+            'id',
+            'product',
+            'affiliate',
+            'quantity'
+        )
+    # price = serializers.SerializerMethodField()
+    # total_price = serializers.SerializerMethodField()
+    # def get_price(self, obj):
+    #     if obj.product:
+    #         print("PRICE", obj.product.price)
+    #         return obj.product.price
+    #     elif obj.affiliate:
+    #         print("PRICE1", obj.product.price)
+    #         return obj.affiliate.price
+    #     return 0
+    
+    # def get_total_price(self, obj):
+    #     print("total_price", obj.product.price)
+    #     return obj.total_price()
+    
+    # def get_product(self, obj):
+        
+    # def get_product(self, obj):
+    #     print("###", obj)
+    #     if obj.product:
+    #         return obj.product.name
+    #     elif obj.affiliate:
+    #         return obj.affiliate.name
+    #     return "unknown"
+
+class Order2Serializer(serializers.ModelSerializer):
+    items = OrderItem2Serializer(many=True, read_only=True)
+    total_price = serializers.SerializerMethodField()
+    total_items = serializers.SerializerMethodField()
+    
+    class Meta:
+        model = Order
+        fields = ['id', 'items', 'total_price', 'total_items', 'created_at', 'updated_at']
+    
+    def get_total_price(self, obj):
+        return obj.total_price()
+    
+    def get_total_items(self, obj):
+        return obj.total_items()
+    
+
+class OrderCheckOutSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Order
+        fields = [
+            'description', 
+            'type',
+        ]
+
 class OrderItemSerializer(serializers.ModelSerializer):
     product_name = serializers.SerializerMethodField()
     class Meta:

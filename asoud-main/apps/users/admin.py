@@ -1,7 +1,7 @@
 from apps.base.admin import admin, BaseTabularInline
 from django.template.defaultfilters import date as admin_dateformat
 
-from .models import User, UserProfile, UserDocument
+from .models import User, UserProfile, UserDocument, BankInfo, UserBankInfo
 
 # Register your models here.
 
@@ -60,3 +60,22 @@ class UserAdmin(admin.ModelAdmin):
 
 
 admin.site.register(User, UserAdmin)
+
+class BankInfoAdmin(admin.ModelAdmin):
+    list_display = ('id', 'name', 'logo')
+
+class UserBankInfoAdmin(admin.ModelAdmin):
+    list_display = (
+        'id',
+        'user',
+        'bank_info',
+        'card_number'
+    )
+    readonly_fields = (
+        'id',
+        'user',
+        'bank_info'
+    )
+
+admin.site.register(BankInfo, BankInfoAdmin)
+admin.site.register(UserBankInfo, UserBankInfoAdmin)

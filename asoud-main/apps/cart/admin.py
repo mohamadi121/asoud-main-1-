@@ -66,3 +66,7 @@ class OrderAdmin(BaseAdmin):
 
 admin.site.register(Order, OrderAdmin)
 
+class OrderItemAdmin(admin.ModelAdmin):
+    list_display = ('id', 'order', 'product', 'affiliate', 'quantity', 'total_price')
+
+admin.site.register(OrderItem, OrderItemAdmin)

@@ -21,6 +21,8 @@ class PaymentCore:
                 model = Wallet
             case "order":
                 model = Order
+            case "market":
+                model = Market
 
             case _:
                 return False, "Incorrect taget Value"
@@ -156,7 +158,12 @@ class PostPaymentCore:
                 payment.target_id,
                 payment.amount
             )
-        
+
+        elif target_model == Market:
+            self.update_market(
+                payment.target_id
+            )
+
         else :
                 self.complete_order(
                     payment.target_id
@@ -202,6 +209,12 @@ class PostPaymentCore:
         success, data = WalletCore.increase_balance(self.user, pk, amount)
         if not success:
             raise Exception(data)
+
+    def update_market(self, target_id):
+        obj = Market.objects.get(id=target_id)
+        obj.status = 'queue'
+        obj.is_paid = True
+        obj.save()
 
     def complete_order(self, pk:str):
         order = Order.objects.get(id=pk)
