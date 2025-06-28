@@ -9,7 +9,8 @@ from apps.category.models import (
 from apps.category.serializers.user_serializers import (
     GroupListSerializer, CategoryListSerializer, SubCategoryListSerializer,
     ProductGroupListSerializer, ProductCategoryListSerializer,
-    ProductSubCategoryListSerializer)
+    ProductSubCategoryListSerializer, SubCategoryImgSerializer,
+    CategoryImgSerializer, GroupImgSerializer)
 
 
 class GroupListAPIView(views.APIView):
@@ -93,6 +94,63 @@ class SubCategoryListAPIView(views.APIView):
 
         return Response(success_response)
     
+
+class SliderImageApiView(views.APIView):
+    def get(self, request, pk=None):
+        try:
+            sub_category_obj = SubCategory.objects.get(id=pk)
+        except:
+            return Response(
+                ApiResponse(
+                    success=False,
+                    code=404,
+                    error="Sub Category Not Found"
+                )
+            )
+        if sub_category_obj.market_slider_img:
+            print('1111')
+            serializer = SubCategoryImgSerializer(
+                sub_category_obj,
+            )
+            success_response = ApiResponse(
+                success=True,
+                code=200,
+                data=serializer.data,
+                message='Data retrieved successfully'
+            )
+            return Response(success_response)
+        elif sub_category_obj.category.market_slider_img:
+            print('2222')
+            serializer = CategoryImgSerializer(
+                sub_category_obj.category,
+            )
+            success_response = ApiResponse(
+                success=True,
+                code=200,
+                data=serializer.data,
+                message='Data retrieved successfully'
+            )
+            return Response(success_response)
+        elif sub_category_obj.category.group.market_slider_img:
+            print('3333')
+            serializer = GroupImgSerializer(
+                sub_category_obj.category.group,
+            )
+            success_response = ApiResponse(
+                success=True,
+                code=200,
+                data=serializer.data,
+                message='Data retrieved successfully'
+            )
+            return Response(success_response)
+        return Response(
+                ApiResponse(
+                    success=False,
+                    code=404,
+                    error="Market slider img Not Found"
+                )
+            )
+
 
 class ProductGroupListAPIView(views.APIView):
     def get(self, request, format=None):
