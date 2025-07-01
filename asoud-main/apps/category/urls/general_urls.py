@@ -3,7 +3,7 @@ from django.urls import path
 from apps.category.views.user_views import(
     GroupListAPIView, SubCategoryListAPIView, CategoryListAPIView,
     ProductGroupListAPIView, ProductCategoryListAPIView,
-    ProductSubCategoryListAPIView
+    ProductSubCategoryListAPIView, SliderImageApiView
     )
 
 app_name = 'category_general'
@@ -24,6 +24,10 @@ urlpatterns = [
         SubCategoryListAPIView.as_view(),
         name='sub-category-list',
     ),
+    path(
+        'slider/image/<str:pk>/',
+        SliderImageApiView.as_view(),
+        name='slider-image'),
     path(
         'product-group/list/',
         ProductGroupListAPIView.as_view(),

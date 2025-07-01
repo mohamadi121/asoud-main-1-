@@ -194,6 +194,6 @@ class UserBankInfo(BaseModel):
         max_length=20,
         verbose_name=_('Branch name'),
     )
-    
+    description = models.TextField(null=True, blank=True)
     def __str__(self):
         return self.card_number

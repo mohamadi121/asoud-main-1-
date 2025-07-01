@@ -11,7 +11,8 @@ from apps.product.models import Product
 from apps.product.serializers.owner_serializers import ProductDetailSerializer
 from apps.advertise.models import Advertisement
 from apps.advertise.serializers import AdvertiseSerializer
-
+from apps.users.models import UserBankInfo
+from apps.users.serializers import UserBankInfoListSerializer
 # Create your views here.
 
 
@@ -136,6 +137,33 @@ class VisitCardView(views.APIView):
             market = Market.objects.get(business_id=business_id)
 
             serializer = MarketDetailSerializer(market)
+
+            return Response(
+                ApiResponse(
+                    success=True,
+                    code=200,
+                    data=serializer.data
+                )
+            )
+        
+        except Exception as e:
+            return Response(
+                ApiResponse(
+                    success=False,
+                    code=500,
+                    error=str(e)
+                )
+            )
+        
+
+class BankCardView(views.APIView):
+    # permission_classes = [permissions.AllowAny]
+
+    def get(self, request, pk):
+        try:
+            bank_info = UserBankInfo.objects.get(id=pk)
+
+            serializer = UserBankInfoListSerializer(bank_info)
 
             return Response(
                 ApiResponse(
