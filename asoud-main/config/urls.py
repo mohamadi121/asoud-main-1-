@@ -18,7 +18,7 @@ from django.contrib import admin
 from django.urls import path, include
 from django.utils.translation import gettext_lazy as _
 
-from apps.flutter.views import VisitCardView
+from apps.flutter.views import VisitCardView, BankCardView
 
 urlpatterns = [
     path(
@@ -32,6 +32,10 @@ urlpatterns = [
     path(
         '<str:business_id>',
         VisitCardView.as_view()
+    ),
+    path(
+        'bank/share/<str:pk>',
+        BankCardView.as_view()
     ),
     path(
         'api/v1/category/',

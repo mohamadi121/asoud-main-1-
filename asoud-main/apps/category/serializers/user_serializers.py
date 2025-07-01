@@ -33,6 +33,34 @@ class SubCategoryListSerializer(serializers.ModelSerializer):
         ]
 
 
+class SubCategoryImgSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = SubCategory
+        fields = [
+            'id',
+            'title',
+            'market_slider_img'
+        ]
+
+class CategoryImgSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = SubCategory
+        fields = [
+            'id',
+            'title',
+            'market_slider_img'
+        ]
+
+class GroupImgSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = SubCategory
+        fields = [
+            'id',
+            'title',
+            'market_slider_img'
+        ]
+
+
 class ProductGroupListSerializer(serializers.ModelSerializer):
     sub_category = serializers.SerializerMethodField()
     class Meta:

@@ -33,7 +33,8 @@ class UserBankInfoCreateSerializer(serializers.ModelSerializer):
             'iban',
             'full_name',
             'branch_id',
-            'branch_name'
+            'branch_name',
+            'description'
         )
     def get_bank_info(self, obj):
         return obj.bank_info.name
