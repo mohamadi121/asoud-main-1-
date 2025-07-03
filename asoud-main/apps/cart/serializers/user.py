@@ -3,18 +3,63 @@ from apps.cart.models import (
     Order, 
     OrderItem
 )
-from apps.product.models import Product
-from apps.affiliate.models import AffiliateProduct
+from apps.product.models import Product, ProductImage
+from apps.affiliate.models import AffiliateProduct, AffiliateProductImage
 from django.db import transaction
 
 
+class ProductImageSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ProductImage
+        fields = ('id', 'image')
+
+
+class ProductSimpleSerializer(serializers.ModelSerializer):
+    images = ProductImageSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = Product
+        fields = ('id', 'name', 'images')
+
+
+class AffiliateImageSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = AffiliateProductImage
+        fields = ('id', 'image')
+
+
+class AffiliateSimpleSerializer(serializers.ModelSerializer):
+    images = AffiliateImageSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = AffiliateProduct
+        fields = ('id', 'name', 'images')
+
 class OrderItem2Serializer(serializers.ModelSerializer):
+    product = ProductSimpleSerializer(read_only=True)
+    product_id = serializers.PrimaryKeyRelatedField(
+        queryset=Product.objects.all(),
+        source='product',  # Maps to the 'product' FK field
+        write_only=True,    # Only used for input, not output
+        required=False,
+        allow_null=True
+    )
+    affiliate = AffiliateSimpleSerializer(read_only=True)
+    affiliate_id = serializers.PrimaryKeyRelatedField(
+        queryset=AffiliateProduct.objects.all(),
+        source='affiliate',
+        write_only=True,
+        required=False,  # Since affiliate is optional
+        allow_null=True  # Allows null in POST data
+    )
     class Meta:
         model = OrderItem
         fields = (
             'id',
             'product',
+            'product_id',
             'affiliate',
+            'affiliate_id',
             'quantity'
         )
     # price = serializers.SerializerMethodField()

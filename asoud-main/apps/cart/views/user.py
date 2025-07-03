@@ -39,6 +39,7 @@ class CartViewSet(viewsets.ViewSet):
         product = serializer.validated_data.get('product', None)
         affiliate = serializer.validated_data.get('affiliate', None)
         quantity = serializer.validated_data.get('quantity', None)
+        print("#", product, "@", serializer.validated_data)
         if product:
             if existing_product := order.items.filter(product=product).first():
                 existing_product.quantity += quantity
