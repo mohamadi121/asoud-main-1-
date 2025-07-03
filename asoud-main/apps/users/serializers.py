@@ -23,7 +23,7 @@ class BankInfoSerializer(serializers.ModelSerializer):
 
 
 class UserBankInfoCreateSerializer(serializers.ModelSerializer):
-    bank_info = serializers.SerializerMethodField()
+    bank_info = serializers.UUIDField(write_only=True)
     class Meta:
         model = UserBankInfo
         fields = (
@@ -36,13 +36,62 @@ class UserBankInfoCreateSerializer(serializers.ModelSerializer):
             'branch_name',
             'description'
         )
-    def get_bank_info(self, obj):
-        return obj.bank_info.name
+    def create(self, validated_data):
+        bank_info_id = validated_data.pop('bank_info')
+        try:
+            bank_info = BankInfo.objects.get(id=bank_info_id)
+        except BankInfo.DoesNotExist:
+            raise serializers.ValidationError({"bank_info": "Bank info not found"})
+            
+        user_bank_info = UserBankInfo.objects.create(
+            bank_info=bank_info,
+            **validated_data
+        )
+        return user_bank_info
+    
+    def to_representation(self, instance):
+        representation = super().to_representation(instance)
+        representation['bank_info'] = instance.bank_info.name if instance.bank_info else None
+        return representation
+
 
 class UserBankInfoUpdateSerializer(UserBankInfoCreateSerializer):
-    def update(self, instance, validated_data):
-        return super().update(instance, validated_data)
+    bank_info = serializers.UUIDField(required=False)  # Make it optional for updates
     
+    class Meta:
+        model = UserBankInfo
+        fields = (
+            'id',
+            'bank_info',
+            'card_number',
+            'account_number',
+            'iban',
+            'full_name',
+            'branch_id',
+            'branch_name',
+            'description'
+        )
+    def update(self, instance, validated_data):
+        bank_info_id = validated_data.pop('bank_info', None)
+        
+        if bank_info_id is not None:
+            try:
+                bank_info = BankInfo.objects.get(id=bank_info_id)
+                instance.bank_info = bank_info
+            except BankInfo.DoesNotExist:
+                raise serializers.ValidationError({"bank_info": "Bank info not found"})
+        
+        # Update other fields
+        for attr, value in validated_data.items():
+            setattr(instance, attr, value)
+        
+        instance.save()
+        return instance
+    
+    def to_representation(self, instance):
+        representation = super().to_representation(instance)
+        representation['bank_info'] = instance.bank_info.name if instance.bank_info else None
+        return representation    
 
 class UserBankInfoListSerializer(serializers.ModelSerializer):
     bank_info = serializers.SerializerMethodField()
