@@ -66,6 +66,36 @@ class OrderItem2Serializer(serializers.ModelSerializer):
             'product_name',
             'affiliate_name'
         )
+    
+    def save(self, order):
+        
+        try:
+            return super().create(self.validated_data)
+        except:
+            product_name = self.validated_data.get("product_name", None)
+            affiliate_name = self.validated_data.get("affiliate_name", None)
+            
+            q = self.validated_data.get('quantity', None)
+            if product_name:
+                
+                p = Product.objects.get(name=product_name)
+                o = OrderItem.objects.create(order=order, product=p, quantity=q)
+                return {
+	                "id": o.id,
+	                "product": ProductSimpleSerializer(p).data,
+	                "affiliate": None,
+	                "quantity": q
+                }
+            elif affiliate_name:
+                a = AffiliateProduct.objects.get(name=affiliate_name)
+                o = OrderItem.objects.create(order=order, affiliate=a, quantity=q)
+                return {
+	                "id": o.id,
+	                "affiliate": AffiliateSimpleSerializer(a).data,
+	                "product": None,
+	                "quantity": q
+                }
+        
     # price = serializers.SerializerMethodField()
     # total_price = serializers.SerializerMethodField()
     # def get_price(self, obj):
