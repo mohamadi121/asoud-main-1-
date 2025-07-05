@@ -41,7 +41,6 @@ class CartViewSet(viewsets.ViewSet):
         affiliate = serializer.validated_data.get('affiliate', None)
         affiliate_name = serializer.validated_data.get('affiliate_name', None)
         quantity = serializer.validated_data.get('quantity', None)
-        print("#", product, "@", serializer.validated_data)
         if product:
             if existing_product := order.items.filter(product=product).first():
                 existing_product.quantity += quantity
@@ -56,8 +55,7 @@ class CartViewSet(viewsets.ViewSet):
                 existing_product.save()
                 serializer = OrderItem2Serializer(existing_product)
                 return Response(serializer.data, status=status.HTTP_201_CREATED)
-            serializer.save(order=order)
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
+            return Response(serializer.save(order=order), status=status.HTTP_201_CREATED)
         if affiliate:
             if existing_affiliate := order.items.filter(affiliate=affiliate).first():
                 existing_affiliate.quantity += quantity
@@ -72,8 +70,7 @@ class CartViewSet(viewsets.ViewSet):
                 existing_affiliate.save()
                 serializer = OrderItem2Serializer(existing_affiliate)
                 return Response(serializer.data, status=status.HTTP_201_CREATED)
-            serializer.save(order=order)
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
+            return Response(serializer.save(order=order), status=status.HTTP_201_CREATED)
            
     def update_item(self, request, pk=None):
         """Update item quantity in cart"""
