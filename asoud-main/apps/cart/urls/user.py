@@ -27,7 +27,7 @@ urlpatterns = [
         name='cart-viewset'
     ),
     path('remove_item/<str:pk>',
-        CartViewSet.as_view({'post': 'remove_item'}),
+        CartViewSet.as_view({'delete': 'remove_item'}),
         name='cart-viewset'
     ),
     path('checkout',

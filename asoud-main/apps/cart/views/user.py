@@ -37,11 +37,21 @@ class CartViewSet(viewsets.ViewSet):
         serializer = OrderItem2Serializer(data=request.data, context={'request': request})
         serializer.is_valid(raise_exception=True)
         product = serializer.validated_data.get('product', None)
+        product_name = serializer.validated_data.get('product_name', None)
         affiliate = serializer.validated_data.get('affiliate', None)
+        affiliate_name = serializer.validated_data.get('affiliate_name', None)
         quantity = serializer.validated_data.get('quantity', None)
         print("#", product, "@", serializer.validated_data)
         if product:
             if existing_product := order.items.filter(product=product).first():
+                existing_product.quantity += quantity
+                existing_product.save()
+                serializer = OrderItem2Serializer(existing_product)
+                return Response(serializer.data, status=status.HTTP_201_CREATED)
+            serializer.save(order=order)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        elif product_name:
+            if existing_product := order.items.filter(product__name=product_name).first():
                 existing_product.quantity += quantity
                 existing_product.save()
                 serializer = OrderItem2Serializer(existing_product)
@@ -53,6 +63,14 @@ class CartViewSet(viewsets.ViewSet):
                 existing_affiliate.quantity += quantity
                 existing_affiliate.save()
                 serializer = OrderItem2Serializer(existing_affiliate) 
+                return Response(serializer.data, status=status.HTTP_201_CREATED)
+            serializer.save(order=order)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        elif affiliate_name:
+            if existing_affiliate := order.items.filter(affiliate__name=affiliate_name).first():
+                existing_affiliate.quantity += quantity
+                existing_affiliate.save()
+                serializer = OrderItem2Serializer(existing_affiliate)
                 return Response(serializer.data, status=status.HTTP_201_CREATED)
             serializer.save(order=order)
             return Response(serializer.data, status=status.HTTP_201_CREATED)

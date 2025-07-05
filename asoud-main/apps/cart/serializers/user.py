@@ -37,6 +37,7 @@ class AffiliateSimpleSerializer(serializers.ModelSerializer):
 
 class OrderItem2Serializer(serializers.ModelSerializer):
     product = ProductSimpleSerializer(read_only=True)
+    product_name = serializers.CharField(required=False, allow_blank=True)
     product_id = serializers.PrimaryKeyRelatedField(
         queryset=Product.objects.all(),
         source='product',  # Maps to the 'product' FK field
@@ -45,6 +46,7 @@ class OrderItem2Serializer(serializers.ModelSerializer):
         allow_null=True
     )
     affiliate = AffiliateSimpleSerializer(read_only=True)
+    affiliate_name = serializers.CharField(required=False, allow_blank=True)
     affiliate_id = serializers.PrimaryKeyRelatedField(
         queryset=AffiliateProduct.objects.all(),
         source='affiliate',
@@ -60,7 +62,9 @@ class OrderItem2Serializer(serializers.ModelSerializer):
             'product_id',
             'affiliate',
             'affiliate_id',
-            'quantity'
+            'quantity',
+            'product_name',
+            'affiliate_name'
         )
     # price = serializers.SerializerMethodField()
     # total_price = serializers.SerializerMethodField()
