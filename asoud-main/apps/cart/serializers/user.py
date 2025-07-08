@@ -95,7 +95,39 @@ class OrderItem2Serializer(serializers.ModelSerializer):
 	                "product": None,
 	                "quantity": q
                 }
-        
+
+
+class OrderItemUpdateSerializer(serializers.ModelSerializer):
+    # Keep these read-only for display purposes
+    item = serializers.SerializerMethodField(read_only=True)
+    item_type = serializers.SerializerMethodField(read_only=True)
+    total_price = serializers.SerializerMethodField(read_only=True)
+    
+    class Meta:
+        model = OrderItem
+        fields = ['id', 'quantity', 'item', 'item_type', 'total_price']
+    
+    def get_item(self, obj):
+        if obj.product:
+            return Product1Serializer(obj.product).data
+        elif obj.affiliate:
+            return AffiliateProduct1Serializer(obj.affiliate).data
+        return None
+    
+    def get_item_type(self, obj):
+        if obj.product:
+            return 'product'
+        elif obj.affiliate:
+            return 'affiliate'
+        return None
+    
+    def get_total_price(self, obj):
+        return obj.total_price()
+    
+    def validate_quantity(self, value):
+        if value < 1:
+            raise serializers.ValidationError("Quantity must be at least 1")
+        return value
     # price = serializers.SerializerMethodField()
     # total_price = serializers.SerializerMethodField()
     # def get_price(self, obj):
@@ -121,8 +153,46 @@ class OrderItem2Serializer(serializers.ModelSerializer):
     #         return obj.affiliate.name
     #     return "unknown"
 
+class Product1Serializer(serializers.ModelSerializer):
+    class Meta:
+        model = Product
+        fields = ['id', 'name']  
+
+class AffiliateProduct1Serializer(serializers.ModelSerializer):
+    class Meta:
+        model = AffiliateProduct
+        fields = ['id', 'name']
+
+
+class OrderItem1Serializer(serializers.ModelSerializer):
+    item = serializers.SerializerMethodField()
+    item_type = serializers.SerializerMethodField()
+    total_price = serializers.SerializerMethodField()
+
+    class Meta:
+        model = OrderItem
+        fields = ['id', 'quantity', 'total_price', 'item', 'item_type']
+    
+    def get_item(self, obj):
+        if obj.product:
+            return Product1Serializer(obj.product).data
+        elif obj.affiliate:
+            return AffiliateProduct1Serializer(obj.affiliate).data
+        return None
+    
+    def get_item_type(self, obj):
+        if obj.product:
+            return 'product'
+        elif obj.affiliate:
+            return 'affiliate'
+        return None
+    
+    def get_total_price(self, obj):
+        return obj.total_price()
+    
+
 class Order2Serializer(serializers.ModelSerializer):
-    items = OrderItem2Serializer(many=True, read_only=True)
+    items = OrderItem1Serializer(many=True, read_only=True)
     total_price = serializers.SerializerMethodField()
     total_items = serializers.SerializerMethodField()
     

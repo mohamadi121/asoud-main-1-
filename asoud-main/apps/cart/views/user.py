@@ -12,7 +12,8 @@ from apps.cart.serializers.user import(
     OrderItem2Serializer,
     OrderCreateSerializer,
     OrderCheckOutSerializer,
-    OrderItemSerializer
+    OrderItemSerializer,
+    OrderItemUpdateSerializer
 )
 from asgiref.sync import async_to_sync
 from channels.layers import get_channel_layer
@@ -28,6 +29,7 @@ class CartViewSet(viewsets.ViewSet):
     def list(self, request):
         """Get order contents"""
         order = self.get_order(request)
+        print('order', order)
         serializer = Order2Serializer(order)
         return Response(serializer.data)
     
@@ -82,11 +84,16 @@ class CartViewSet(viewsets.ViewSet):
                 {"error": "Item not found in order"}, 
                 status=status.HTTP_404_NOT_FOUND
             )
-        
-        serializer = OrderItem2Serializer(item, data=request.data, partial=True)
+    
+        serializer = OrderItemUpdateSerializer(
+            item, 
+            data=request.data, 
+            partial=True,
+            context={'request': request}
+        )
         serializer.is_valid(raise_exception=True)
-        serializer.save()
-        
+        serializer.save()  # No need to pass order since it's already set
+    
         return Response(serializer.data)
     
     def remove_item(self, request, pk=None):
