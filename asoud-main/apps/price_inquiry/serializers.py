@@ -98,6 +98,13 @@ class InquiryCreateSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError("unit must be less than 10 characters long.")
         return value
 
+
+class InquiryUpdateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Inquiry
+        fields = '__all__'
+
+
 class InquirySendSetSerializer(serializers.ModelSerializer):
     class Meta:
         model = Inquiry

@@ -9,6 +9,7 @@ from apps.price_inquiry.models import (
 from apps.price_inquiry.serializers import (
     InquiryCreateSerializer,
     InquirySerializer,
+    InquiryUpdateSerializer,
     InquiryImageSerializer,
     InquirySendSetSerializer,
     InquiryExpireSetSerializer,
@@ -35,6 +36,33 @@ class InquiryCreateView(views.APIView):
             ),
             status=status.HTTP_201_CREATED
         )
+    
+
+class InquiryUpdateView(views.APIView):
+    def put(self, request, pk=None):
+        try:
+            obj = Inquiry.objects.get(pk=pk)
+        except Inquiry.DoesNotExist:
+            return Response(
+                ApiResponse(
+                    success=False,
+                    code=404,
+                    error="Inquiry Not Found"
+                ),
+                status=status.HTTP_404_NOT_FOUND
+            )
+        serializer = InquiryUpdateSerializer(obj, data=request.data, partial=True)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(
+            ApiResponse(
+                success=True,
+                code=200,
+                data=serializer.data
+            ),
+            status=status.HTTP_200_OK
+        )
+    
     
 class InquiryDeleteView(views.APIView):
     def post(self, request, pk):
