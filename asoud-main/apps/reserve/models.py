@@ -52,7 +52,7 @@ class Specialist(BaseModel):
         verbose_name_plural = _('Specialists')
         
     def __str__(self):
-        return self.id[:4]
+        return str(self.id)[:4]
 
 class ReserveTime(BaseModel):
     SATURDAY    = '1'
@@ -102,7 +102,7 @@ class ReserveTime(BaseModel):
         verbose_name_plural = _('ReserveTimes')
         
     def __str__(self):
-        return self.id[:4]
+        return str(self.id)[:4]
     
 class DayOff(BaseModel):
     market = models.ForeignKey(
@@ -147,5 +147,5 @@ class Reservation(BaseModel):
         verbose_name_plural = _('Reservations')
         
     def __str__(self):
-        return self.id[:4]
+        return str(self.id)[:4]
     
