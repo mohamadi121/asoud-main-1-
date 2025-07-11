@@ -3,6 +3,7 @@ from django.urls import path
 from apps.sms.views.admin import (
     LineCreateView, 
     LineListView, 
+    LineUpdateView,
     LineDeleteView, 
     TemplateCreateView,
     TemplateListView,
@@ -19,7 +20,7 @@ app_name = 'sms_admin'
 
 urlpatterns = [
     path('line/create', LineCreateView.as_view()),
-    path('line/update/<str:pk>', LineDeleteView.as_view()),
+    path('line/update/<str:pk>', LineUpdateView.as_view()),
     path('line/delete/<str:pk>', LineDeleteView.as_view()),
     path('line', LineListView.as_view()),
 

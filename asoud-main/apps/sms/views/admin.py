@@ -36,6 +36,43 @@ class LineCreateView(views.APIView):
             )
         )
 
+
+class LineUpdateView(views.APIView):
+    def put(self, request, pk=None):
+        if not request.user.is_staff and not request.user.is_superuser:
+            return Response(
+                ApiResponse(
+                    success=False,
+                    code=403,
+                    error="UnAuthorized"
+                ),
+                status=status.HTTP_403_FORBIDDEN
+            )
+        try:
+            line = Line.objects.get(id=pk)
+            serializer = LineSerializer(line, request.data, partial=True)
+            serializer.is_valid(raise_exception=True)
+
+            serializer.save()
+
+            return Response(
+                ApiResponse(
+                    success=True,
+                    code=201,
+                    data=serializer.data
+                )
+            )
+        except Line.DoesNotExist:
+            return Response(
+                ApiResponse(
+                    success=False,
+                    code=404,
+                    error="Line Not Found"
+                ),
+                status=status.HTTP_404_NOT_FOUND
+            )
+    
+
 class LineListView(views.APIView):
     def get(self, request):
         if not request.user.is_staff and not request.user.is_superuser:
