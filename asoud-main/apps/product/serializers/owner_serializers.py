@@ -128,9 +128,10 @@ class ProductCreateSerializer(serializers.ModelSerializer):
 
 
 class ProductShippingCreateSerializer(serializers.ModelSerializer):
+    product = serializers.UUIDField(read_only=True)
     class Meta:
         model = ProductShipping
-        fields = ('name', 'price', )
+        fields = ('product', 'name', 'price', )
 
 class ProductShipListSerializer(serializers.ModelSerializer):
     class Meta:

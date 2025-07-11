@@ -126,7 +126,7 @@ class ProductShippingListAPIView(views.APIView):
             )
         serializer = ProductShipListSerializer(
             shipping_options,
-            many=True
+            many=True,
             context={"request": request},
         )           
         success_response = ApiResponse(
