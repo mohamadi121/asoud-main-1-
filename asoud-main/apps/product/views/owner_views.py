@@ -137,7 +137,77 @@ class ProductShippingListAPIView(views.APIView):
         )
         return Response(success_response)
 
+class ProductListAPIView(views.APIView):
+    def get(self, request, pk):
+        product_list = Product.objects.filter(
+            market=pk
+        )
 
+        serializer = ProductListSerializer(
+            product_list,
+            many=True,
+            context={"request": request},
+        )
+
+        with_affiliate = request.GET.get('affiliate')
+
+        if with_affiliate:
+            affiliate_product_list = AffiliateProduct.objects.filter(
+                market=pk
+            )
+            
+            aff_serializer = AffiliateProductListSerializer(
+                affiliate_product_list,
+                many=True,
+                context={"request": request},
+            )
+
+            success_response = ApiResponse(
+                success=True,
+                code=200,
+                data=serializer.data + aff_serializer.data,
+                message='Data retrieved successfully'
+            )
+            
+        else:
+            success_response = ApiResponse(
+                success=True,
+                code=200,
+                data=serializer.data,
+                message='Data retrieved successfully'
+            )
+
+        return Response(success_response)
+
+
+class ProductDetailAPIView(views.APIView):
+    def get(self, request, pk):
+        try:
+            product = Product.objects.get(id=pk)
+        except:
+            return Response(
+                ApiResponse(
+                    success=False,
+                    code=404,
+                    error="Product Not Found"
+                )
+            )
+        
+        serializer = ProductDetailSerializer(
+            product,
+            context={"request": request},
+        )
+
+        success_response = ApiResponse(
+            success=True,
+            code=200,
+            data=serializer.data,
+            message='Data retrieved successfully',
+        )
+
+        return Response(success_response)
+    
+    
 class ProductDetailAPIView(views.APIView):
     def get(self, request, pk):
         try:
