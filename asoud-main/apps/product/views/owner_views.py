@@ -11,6 +11,7 @@ from apps.product.serializers.owner_serializers import (
     ProductListSerializer,
     ProductThemeListSerializer,
     ProductThemeCreateSerializer,
+    ProductShippingCreateSerializer
 )
 from apps.product.models import Product, ProductTheme
 from apps.market.models import Market
@@ -68,6 +69,35 @@ class ProductDiscountCreateAPIView(views.APIView):
         percentage = serializer.validated_data.get('percentage')
         product.main_price = product.main_price - (product.main_price * percentage / 100)
         product.save()
+        success_response = ApiResponse(
+                success=True,
+                code=200,
+                data={
+                    **serializer.data,
+                    },
+                message='ProductDiscount created successfully.',
+                )
+
+        return Response(success_response, status=status.HTTP_201_CREATED)
+    
+class ProductShippingCreateAPIView(views.APIView):
+    def post(self, request, pk):
+        try:
+            product = Product.objects.get(id=pk)
+        except  Product.DoesNotExist:
+            return Response(
+                ApiResponse(
+                    success=False,
+                    code=404,
+                    error="Product Not Found"
+                )
+            )
+        serializer = ProductShippingCreateSerializer(
+            data=request.data,
+            context={'request': request},
+        )
+        serializer.is_valid()
+        serializer.save(product=product)
         success_response = ApiResponse(
                 success=True,
                 code=200,

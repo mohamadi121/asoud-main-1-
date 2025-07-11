@@ -4,6 +4,7 @@ from django.urls import reverse
 from apps.users.models import User
 from apps.product.models import (
     Product,
+    ProductShipping,
     ProductDiscount,
     ProductTheme,
     ProductKeyword,
@@ -125,6 +126,13 @@ class ProductCreateSerializer(serializers.ModelSerializer):
         ]
         return representation
 
+
+class ProductShippingCreateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ProductShipping
+        fields = ('name', 'price', )
+
+        
 class ProductDiscountCreateSerializer(serializers.ModelSerializer):
     users = UserField(
         many=True,
