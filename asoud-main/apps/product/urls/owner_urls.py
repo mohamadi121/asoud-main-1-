@@ -9,7 +9,8 @@ from apps.product.views.owner_views import (
     ProductThemeListAPIView,
     ProductThemeUpdateAPIView,
     ProductThemeDeleteAPIView,
-    ProductShippingCreateAPIView
+    ProductShippingCreateAPIView,
+    ProductShippingListAPIView
 )
 
 app_name = 'product_owner'
@@ -29,6 +30,11 @@ urlpatterns = [
         'ship/create/<str:pk>/',
         ProductShippingCreateAPIView.as_view(),
         name='ship-create'
+    ),
+    path(
+        'ship/list/<str:pk>/',
+        ProductShippingListAPIView.as_view(),
+        name='ship-list'
     ),
     path(
         'list/<str:pk>/',

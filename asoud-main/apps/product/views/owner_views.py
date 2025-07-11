@@ -11,7 +11,8 @@ from apps.product.serializers.owner_serializers import (
     ProductListSerializer,
     ProductThemeListSerializer,
     ProductThemeCreateSerializer,
-    ProductShippingCreateSerializer
+    ProductShippingCreateSerializer,
+    ProductShipListSerializer
 )
 from apps.product.models import Product, ProductTheme
 from apps.market.models import Market
@@ -110,46 +111,30 @@ class ProductShippingCreateAPIView(views.APIView):
         return Response(success_response, status=status.HTTP_201_CREATED)
 
 
-class ProductListAPIView(views.APIView):
+class ProductShippingListAPIView(views.APIView):
     def get(self, request, pk):
-        product_list = Product.objects.filter(
-            market=pk
-        )
-
-        serializer = ProductListSerializer(
-            product_list,
-            many=True,
+        try:
+            product = Product.objects.get(id=pk)
+            shipping_options = product.ships.all()
+        except Product.DoesNotExist:
+            return Response(
+                ApiResponse(
+                    success=False,
+                    code=404,
+                    error="Product Not Found"
+                )
+            )
+        serializer = ProductShipListSerializer(
+            shipping_options,
+            many=True
             context={"request": request},
+        )           
+        success_response = ApiResponse(
+            success=True,
+            code=200,
+            data=serializer.data,
+            message='Data retrieved successfully'
         )
-
-        with_affiliate = request.GET.get('affiliate')
-
-        if with_affiliate:
-            affiliate_product_list = AffiliateProduct.objects.filter(
-                market=pk
-            )
-            
-            aff_serializer = AffiliateProductListSerializer(
-                affiliate_product_list,
-                many=True,
-                context={"request": request},
-            )
-
-            success_response = ApiResponse(
-                success=True,
-                code=200,
-                data=serializer.data + aff_serializer.data,
-                message='Data retrieved successfully'
-            )
-            
-        else:
-            success_response = ApiResponse(
-                success=True,
-                code=200,
-                data=serializer.data,
-                message='Data retrieved successfully'
-            )
-
         return Response(success_response)
 
 
