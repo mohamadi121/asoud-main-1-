@@ -104,7 +104,7 @@ class ProductShippingCreateAPIView(views.APIView):
                 data={
                     **serializer.data,
                     },
-                message='ProductDiscount created successfully.',
+                message='Product ship created successfully.',
                 )
 
         return Response(success_response, status=status.HTTP_201_CREATED)

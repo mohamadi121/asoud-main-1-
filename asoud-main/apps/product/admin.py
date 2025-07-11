@@ -6,6 +6,7 @@ from .models import (
     ProductKeyword,
     ProductDiscount,
     ProductTheme,
+    ProductShipping,
 )
 
 # Register your models here.
@@ -70,7 +71,9 @@ class ProductAdmin(BaseAdmin):
 
 
 admin.site.register(Product, ProductAdmin)
-
+class ProductShipAdmin(BaseAdmin):
+    list_display = ('id', 'name', 'price')
+admin.site.register(ProductShipping, ProductShipAdmin)
 
 class ProductKeywordAdmin(BaseAdmin):
     list_display = [
