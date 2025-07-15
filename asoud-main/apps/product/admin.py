@@ -63,7 +63,6 @@ class ProductAdmin(BaseAdmin):
         'tag',
         'tag_position',
         'sell_type',
-        'ship_cost',
         'ship_cost_pay_type'
     ) + BaseAdmin.fields
 

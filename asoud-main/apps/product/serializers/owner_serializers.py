@@ -136,7 +136,7 @@ class ProductShippingCreateSerializer(serializers.ModelSerializer):
 class ProductShipListSerializer(serializers.ModelSerializer):
     class Meta:
         model = ProductShipping
-        fields = ('name', 'price', )
+        fields = ('product','name', 'price', )
         
 class ProductDiscountCreateSerializer(serializers.ModelSerializer):
     users = UserField(
