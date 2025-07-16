@@ -169,7 +169,7 @@ class UserBankInfo(BaseModel):
     )
     card_number = models.CharField(
         unique=True,
-        max_length=16,
+        max_length=19,
         verbose_name=_('Card number'),
     )
     account_number = models.CharField(
