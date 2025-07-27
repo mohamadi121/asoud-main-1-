@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>خطای سرور - آسود</title>
+    
+    <!-- Loading Professional Persian Font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;700;800&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --primary-color: #0d2c54;
+            --scaffold-color: #ffffff;
+            --light-blue: #89c2d9;
+            --text-secondary: #A7A9B7;
+            --error-color: #ff6b6b;
+            --border-radius: 18px;
+        }
+
+        *, *::before, *::after {
+            box-sizing: border-box;
+        }
+
+        body, html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            font-family: 'Vazirmatn', sans-serif;
+            background-color: var(--primary-color);
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        .page-container {
+            position: relative;
+            width: 100vw;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: linear-gradient(180deg, rgba(13, 44, 84, 0.8) 0%, rgba(13, 44, 84, 1) 100%);
+        }
+
+        .error-card {
+            width: 90vw;
+            max-width: 400px;
+            background-color: var(--scaffold-color);
+            border-radius: var(--border-radius);
+            padding: 3rem 2rem;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .error-icon {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 2rem;
+            background-color: var(--error-color);
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        .error-icon svg {
+            width: 40px;
+            height: 40px;
+            fill: white;
+        }
+
+        .error-title {
+            color: var(--primary-color);
+            font-size: 24px;
+            font-weight: 800;
+            margin-bottom: 1rem;
+        }
+
+        .error-message {
+            color: var(--text-secondary);
+            font-size: 16px;
+            line-height: 1.6;
+            margin-bottom: 2rem;
+        }
+
+        .action-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-family: 'Vazirmatn', sans-serif;
+            font-weight: 700;
+            text-decoration: none;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 14px;
+        }
+
+        .btn-primary {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: #1a3a6b;
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background-color: transparent;
+            color: var(--primary-color);
+            border: 2px solid var(--primary-color);
+        }
+
+        .btn-secondary:hover {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .retry-info {
+            margin-top: 2rem;
+            padding: 1rem;
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            color: var(--text-secondary);
+            font-size: 12px;
+        }
+
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid var(--primary-color);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-left: 10px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="page-container">
+        <div class="error-card">
+            <div class="error-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                    <path d="M11 15h2v2h-2zm0-8h2v6h-2zm.99-5C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8z"/>
+                </svg>
+            </div>
+            
+            <h1 class="error-title">خطای موقت سرور</h1>
+            
+            <p class="error-message">
+                {{ error_message|default:"متأسفانه خطایی در سرور رخ داده است. لطفاً چند لحظه صبر کنید و دوباره امتحان کنید." }}
+            </p>
+            
+            <div class="action-buttons">
+                <button onclick="retryRequest()" class="btn btn-primary" id="retryBtn">
+                    تلاش مجدد
+                    <span class="loading hidden" id="loadingSpinner"></span>
+                </button>
+                <button onclick="history.back()" class="btn btn-secondary">
+                    بازگشت به صفحه قبل
+                </button>
+                <a href="https://asoud.ir" class="btn btn-secondary">
+                    بازگشت به صفحه اصلی آسود
+                </a>
+            </div>
+            
+            <div class="retry-info">
+                اگر مشکل ادامه داشت، لطفاً با پشتیبانی آسود تماس بگیرید یا بعداً امتحان کنید.
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let retryCount = 0;
+        const maxRetries = 3;
+
+        function retryRequest() {
+            const retryBtn = document.getElementById('retryBtn');
+            const loadingSpinner = document.getElementById('loadingSpinner');
+            
+            if (retryCount >= maxRetries) {
+                alert('تعداد تلاش‌های مجدد به حد مجاز رسیده است. لطفاً بعداً امتحان کنید.');
+                return;
+            }
+            
+            retryBtn.disabled = true;
+            loadingSpinner.classList.remove('hidden');
+            retryBtn.textContent = 'در حال تلاش مجدد...';
+            retryBtn.appendChild(loadingSpinner);
+            
+            setTimeout(() => {
+                retryCount++;
+                window.location.reload();
+            }, 2000);
+        }
+
+        // Auto-retry after 5 seconds for first attempt
+        if (retryCount === 0) {
+            setTimeout(() => {
+                retryRequest();
+            }, 5000);
+        }
+    </script>
+
+</body>
+</html>

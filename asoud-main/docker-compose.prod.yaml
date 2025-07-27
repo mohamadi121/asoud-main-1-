@@ -1,0 +1,85 @@
+version: '3.9'
+
+services:
+    web:
+        container_name: asoud_api
+        build: .
+        command: daphne config.asgi:application --bind 0.0.0.0 --port 8000
+        restart: always
+        environment:
+            - DJANGO_SETTINGS_MODULE=config.settings.production
+        volumes:
+            - ./:/asoud/
+            - static_volume:/asoud/static
+            - media_volume:/asoud/media
+        ports:
+            - 8000:8000
+        env_file:
+            - ./.env
+        depends_on:
+            - db2
+            - redis
+        networks:
+            - main_network
+
+    db2:
+         container_name: asoud_db2
+         image: postgres:alpine
+         restart: always
+         ports:
+             - 5432:5432
+         environment:
+             POSTGRES_DB: ${DATABASE_NAME2}
+             POSTGRES_USER: ${DATABASE_USERNAME2}
+             POSTGRES_PASSWORD: ${DATABASE_PASSWORD2}
+         volumes:
+             - db_data:/var/lib/postgresql/data:rw
+         networks:
+             - main_network
+
+    redis:
+        container_name: asoud_redis
+        image: redis:alpine
+        ports:
+            - 6379:6379
+        volumes:
+            - redis_data:/data
+        command:
+            [
+                'redis-server',
+                '--requirepass',
+                '${REDIS_PASSWORD}',
+                '--save',
+                '60',
+                '1',
+                '--loglevel',
+                'warning',
+            ]
+        environment:
+            - REDIS_PASSWORD = ${REDIS_PASSWORD}
+        networks:
+             - main_network
+    nginx:
+        container_name: asoud_nginx
+        image: nginx:1.25.3-alpine
+        restart: always
+        ports:
+            - 80:80
+            - 443:443
+        volumes:
+            - ./data/nginx/nginx.prod.conf:/etc/nginx/nginx.conf
+            - static_volume:/asoud/static
+            - media_volume:/asoud/media
+            - /etc/ssl/certs:/etc/ssl/certs:ro
+            - /etc/ssl/private:/etc/ssl/private:ro
+        networks:
+            - main_network
+
+volumes:
+    db_data:
+    redis_data:
+    static_volume:
+    media_volume:
+
+networks:
+    main_network:

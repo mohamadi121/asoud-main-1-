@@ -1,0 +1,84 @@
+
+name: asoud-dev
+
+services:
+    web:
+        container_name: asoud_api
+        build: .
+        command: python manage.py runserver 0.0.0.0:8000
+        # command: daphne config.asgi:application --bind 0.0.0.0 --port 8000
+        environment:
+            - DJANGO_SETTINGS_MODULE=config.settings.development
+        volumes:
+            # - ./:/asoud/
+            - static_volume:/asoud/static
+            - media_volume:/asoud/media
+        ports:
+            - 8000:8000
+        env_file:
+            - ./.env.docker
+        depends_on:
+            - db
+            - redis
+        networks:
+            - asoud_network
+        develop:
+            watch:
+                - action: sync
+                  path: .
+                  target: /asoud/
+
+    db:
+        container_name: asoud_db
+        image: postgres:alpine
+        ports:
+            - 5432:5432
+        environment:
+            POSTGRES_DB: asoud_dev
+            POSTGRES_USER: postgres
+            POSTGRES_PASSWORD: postgres123
+
+        volumes:
+            - db_data:/var/lib/postgresql/data:rw
+        networks:
+            - asoud_network
+
+    redis:
+        container_name: asoud_redis
+        image: redis:alpine
+        ports:
+            - 6379:6379
+        volumes:
+            - redis_data:/data
+        command:
+            [
+                'redis-server',
+                '--requirepass',
+                'password123',
+            ]
+        environment:
+            - REDIS_PASSWORD=${REDIS_PASSWORD}
+        networks:
+            - asoud_network
+
+    nginx:
+        container_name: asoud_nginx
+        image: nginx:1.25.3-alpine
+        ports:
+            - 80:80
+        volumes:
+            - ./data/nginx/nginx.dev.conf:/etc/nginx/nginx.conf
+            - static_volume:/asoud/static
+            - media_volume:/asoud/media
+        networks:
+            - asoud_network
+
+volumes:
+    db_data:
+    redis_data:
+    static_volume:
+    media_volume:
+
+networks:
+    asoud_network:
+        driver: bridge

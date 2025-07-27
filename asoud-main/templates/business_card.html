@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>کارت ویزیت دیجیتال حرفه‌ای - آسود</title>
+    
+    <!-- Loading Professional Persian Font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;700;800&display=swap" rel="stylesheet">
+    
+    <style>
+        /* --- Professional Theming & Variables (like Colora in Flutter) --- */
+        :root {
+            --primary-color: #0d2c54; /* A deep, elegant navy blue */
+            --scaffold-color: #ffffff;
+            --light-blue: #89c2d9;   
+            --text-secondary: #A7A9B7;
+            --border-radius: 18px; /* Consistent border radius */
+        }
+
+        /* --- Global Reset & Body Styling --- */
+        *, *::before, *::after {
+            box-sizing: border-box;
+        }
+
+        body, html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            font-family: 'Vazirmatn', sans-serif;
+            background-color: var(--primary-color);
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        /* --- Page Container (like Scaffold & Stack) --- */
+        .page-container {
+            position: relative;
+            width: 100vw;
+            min-height: 100vh;
+        }
+
+        .background-image {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            /* Placeholder for 'ba_logo.png'. A gradient is a stylish alternative. */
+            background: linear-gradient(180deg, rgba(13, 44, 84, 0.8) 0%, rgba(13, 44, 84, 1) 100%);
+            object-fit: cover;
+            z-index: 1;
+        }
+
+        /* --- Scrollable Content (like SingleChildScrollView) --- */
+        .content-scroll {
+            position: relative;
+            z-index: 2;
+            width: 100%;
+            height: 100vh;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding-top: 30vh;
+            padding-bottom: 5vh;
+        }
+
+        /* --- Main Business Card (The primary white container) --- */
+        .business-card {
+            width: 90vw;
+            max-width: 450px; /* Max-width for better desktop view */
+            background-color: var(--scaffold-color);
+            border-radius: var(--border-radius);
+            position: relative;
+            display: flex;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+        
+        /* The blue background part on the right */
+        .business-card-bg {
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 60%;
+            height: 100%;
+            background-color: var(--primary-color);
+            border-radius: var(--border-radius);
+            z-index: 3;
+        }
+
+        /* Content layered on top of the card */
+        .card-content {
+            position: relative;
+            z-index: 4;
+            width: 100%;
+            padding: 2vh 0;
+            display: flex;
+            flex-direction: column;
+            gap: 1.8vh;
+        }
+
+        /* --- Shared Section Styles --- */
+        .align-left {
+            margin-right: auto;
+            padding-left: 3vw;
+        }
+        .align-right {
+            margin-left: auto;
+            padding-right: 5vw;
+        }
+        .align-center {
+            margin-left: auto;
+            margin-right: auto;
+            padding: 0 5vw;
+        }
+
+        /* --- Specific Card Elements --- */
+
+        .share-button {
+            width: 10vw; max-width: 40px;
+            aspect-ratio: 1 / 1;
+            background-color: black;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        .share-button:hover {
+            transform: scale(1.1);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+        }
+        .share-button svg {
+            width: 60%; height: 60%;
+            fill: var(--scaffold-color);
+        }
+        
+        .logo-container {
+            width: 20vw; max-width: 80px;
+            margin-right: 14vw; /* Equivalent to horizontal: 0.24 - 0.1(width)/2 */
+        }
+        .logo-circle {
+            width: 100%;
+            aspect-ratio: 1 / 1;
+            background-color: white;
+            border-radius: 50%;
+            border: 3px solid var(--light-blue);
+            padding: 12%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .logo-circle svg {
+            width: 100%; height: 100%;
+            fill: var(--primary-color);
+        }
+        
+        .text-content-right {
+            width: 50%;
+        }
+        .card-name { color: var(--scaffold-color); font-size: 18px; font-weight: 800; text-align: right; }
+        .card-slogan { color: var(--scaffold-color); font-size: 13px; text-align: right; }
+        .card-description { color: var(--scaffold-color); font-size: 10px; text-align: justify; line-height: 1.6; }
+        .card-contact-title { color: var(--scaffold-color); font-size: 18px; font-weight: 800; text-align: right; }
+        
+        .contact-info-left {
+            width: 35%; /* A bit more space for phone numbers */
+            font-weight: 700;
+            text-align: left;
+            direction: ltr; /* Ensure numbers are displayed LTR */
+        }
+        .card-phone {
+            color: var(--primary-color);
+            font-size: clamp(14px, 4.2vw, 18px); /* Responsive font size */
+        }
+
+        .social-icons {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            margin-top: 1vh;
+            width: 100%;
+        }
+        .social-icons a, .social-icons .icon {
+            color: var(--primary-color);
+            cursor: pointer;
+            transition: transform 0.2s ease, color 0.2s ease;
+        }
+        .social-icons a:hover, .social-icons .icon:hover {
+            transform: scale(1.2);
+            color: var(--light-blue);
+        }
+        .social-icons svg { width: 24px; height: 24px; }
+
+        .map-container {
+            width: 80%;
+            height: 20vh;
+            border-radius: var(--border-radius);
+            border: 3px solid var(--light-blue);
+            overflow: hidden; /* This is ClipRRect */
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+        .map-container iframe { width: 100%; height: 100%; border: none; }
+
+        .address-section {
+            width: 90%;
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+        }
+        .address-title { font-size: 18px; color: var(--scaffold-color); font-weight: 800; white-space: nowrap; }
+        .address-text { width: 55%; font-size: 10px; color: var(--scaffold-color); font-weight: 400; line-height: 1.7; }
+        
+        .stroked-text-wrapper {
+            width: 90%;
+            font-size: 10px;
+            font-weight: 700;
+            white-space: nowrap;
+            text-align: center;
+            color: var(--scaffold-color);
+            -webkit-text-stroke: 0.5px var(--primary-color);
+            text-stroke: 0.5px var(--primary-color);
+        }
+        
+        /* --- Footer Card Styling --- */
+        .footer-card {
+            width: 90vw;
+            max-width: 450px;
+            margin-top: 2vh;
+            background-color: var(--primary-color);
+            border-radius: var(--border-radius);
+            border: 1px solid var(--scaffold-color);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-around;
+            align-items: center;
+            padding: 2vh 3vw;
+            gap: 2vh;
+        }
+        .footer-top {
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+        }
+        .footer-text-content { width: 65%; }
+        .footer-title { color: var(--scaffold-color); font-size: 22px; font-weight: 800; }
+        .footer-subtitle { color: var(--scaffold-color); font-size: 13px; font-weight: 700; white-space: nowrap; }
+        .footer-description { color: var(--scaffold-color); font-size: 9px; text-align: justify; margin-top: 1.5vh; line-height: 1.8; }
+        
+        .footer-logo-wrapper { width: 20vw; max-width: 80px; }
+
+        .footer-links {
+            display: flex;
+            flex-wrap: wrap; /* Allows wrapping on smaller screens */
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+            font-size: 10px;
+            color: var(--text-secondary);
+            gap: 5px 15px; /* Row and column gap */
+        }
+        .footer-links .divider { display: none; } /* Replaced by gap */
+        @media (min-width: 400px) { /* Show dividers only on wider screens */
+            .footer-links .divider { display: block; height: 12px; border-left: 1px solid var(--text-secondary); }
+        }
+
+        .footer-slogan { color: var(--scaffold-color); font-weight: 800; font-size: 13px; }
+    </style>
+</head>
+<body>
+
+    <div class="page-container">
+        <div class="background-image"></div>
+        
+        <main class="content-scroll">
+            
+            <section class="business-card">
+                <div class="business-card-bg"></div>
+                <div class="card-content">
+
+                    <div class="align-left">
+                        <div class="share-button" id="shareButton" title="اشتراک‌گذاری کارت">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.66 1.34 3 3 3s3-1.34 3-3-1.34-3-3-3z"/></svg>
+                        </div>
+                    </div>
+
+                    <div class="align-left logo-container">
+                        <div class="logo-circle">
+                            {% if market.logo_img %}
+                                <img src="{{ market.logo_img.url }}" alt="لوگو {{ market.name }}">
+                            {% else %}
+                                <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><path d="M50,5 L95,27.5 L95,72.5 L50,95 L5,72.5 L5,27.5 Z M50,15 L85,32.5 v35 L50,85 L15,67.5 v-35 Z M30,40 L70,40 L70,60 L30,60 Z" /></svg>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <div class="align-right text-content-right">
+                        <h1 class="card-name" id="cardName">{{ market.name }}</h1>
+                    </div>
+
+                    <div class="align-right text-content-right">
+                        <p class="card-slogan" id="cardSlogan">{{ market.slogan|default:"" }}</p>
+                    </div>
+                    
+                    <div class="align-right text-content-right">
+                        <p class="card-description" id="cardDescription">{{ market.description|default:"" }}</p>
+                    </div>
+
+                    <div class="align-right text-content-right">
+                        <h2 class="card-contact-title">راه‌های ارتباطی:</h2>
+                    </div>
+
+                    <div class="align-left contact-info-left">
+                        {% if market.contact.first_mobile_number %}
+                            <p class="card-phone" id="cardMobile1">{{ market.contact.first_mobile_number }}</p>
+                        {% endif %}
+                        {% if market.contact.second_mobile_number %}
+                            <p class="card-phone" id="cardMobile2">{{ market.contact.second_mobile_number }}</p>
+                        {% endif %}
+                        {% if market.contact.telephone %}
+                            <p class="card-phone" id="cardTelephone">{{ market.contact.telephone }}</p>
+                        {% endif %}
+                        
+                        <div class="social-icons">
+                            {% if market.contact.messenger_ids.telegram %}
+                                <a href="https://t.me/{{ market.contact.messenger_ids.telegram }}" id="telegramLink" target="_blank" title="تلگرام">
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M9.78,18.65l.28,4.17a.5.5,0,0,0,.8.42l3.26-3.1,3.9,2.88A.5.5,0,0,0,19,22.42l2.7-12.33a.5.5,0,0,0-.65-.56L2.27,11.76a.5.5,0,0,0,.05,.92l5,1.75,8.8-5.48c.25-.15.48.18.25.35L8.47,16.4Z"/></svg>
+                                </a>
+                            {% endif %}
+                            {% if market.contact.messenger_ids.instagram %}
+                                <a href="https://instagram.com/{{ market.contact.messenger_ids.instagram }}" id="instagramLink" target="_blank" title="اینستاگرام">
+                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M9 22H15C20 22 22 20 22 15V9C22 4 20 2 15 2H9C4 2 2 4 2 9V15C2 20 4 22 9 22Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M12 15.5C13.933 15.5 15.5 13.933 15.5 12C15.5 10.067 13.933 8.5 12 8.5C10.067 8.5 8.5 10.067 8.5 12C8.5 13.933 10.067 15.5 12 15.5Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M17.636 7.36396H17.648" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                                </a>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    {% if market.location %}
+                    <div class="align-center">
+                        <div class="map-container">
+                            <iframe 
+                                id="mapFrame" 
+                                src="https://www.openstreetmap.org/export/embed.html?bbox={{ market.location.longitude|add:'-0.005' }},{{ market.location.latitude|add:'-0.005' }},{{ market.location.longitude|add:'0.005' }},{{ market.location.latitude|add:'0.005' }}&layer=mapnik&marker={{ market.location.latitude }},{{ market.location.longitude }}"
+                                title="نقشه موقعیت مکانی">
+                            </iframe>
+                        </div>
+                    </div>
+
+                    <div class="align-center address-section">
+                        <h3 class="address-title">آدرس:</h3>
+                        <p class="address-text" id="cardAddress">{{ market.location.address|default:"آدرسی ثبت نشده است" }}</p>
+                    </div>
+                    {% endif %}
+                    
+                    <div class="align-center">
+                        <p class="stroked-text-wrapper">در صورت نیاز به ویرایش از طریق دکمه مدیریت کارت ویزیت اقدام نمایید</p>
+                    </div>
+                    
+                </div>
+            </section>
+            
+            <footer class="footer-card">
+                <div class="footer-top">
+                    <div class="footer-text-content">
+                        <h3 class="footer-title">آسود</h3>
+                        <p class="footer-subtitle">ارائه دهنده طرح‌های ویژه کسب و کار</p>
+                        <p class="footer-description">این نرم افزار برای شما ساخته شده است. با ارسال پیشنهادات و انتقادات در نرم‌افزار خود سهیم باشید. این نرم‌افزار دارای نماد رسانه‌های دیجیتال و ثبت ملی می‌باشد.</p>
+                    </div>
+                    <div class="footer-logo-wrapper">
+                        <div class="logo-circle">
+                             <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><path d="M50,5 L95,27.5 L95,72.5 L50,95 L5,72.5 L5,27.5 Z M50,15 L85,32.5 v35 L50,85 L15,67.5 v-35 Z M30,40 L70,40 L70,60 L30,60 Z" /></svg>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="footer-links">
+                    <span>پشتیبانی</span>
+                    <span class="divider"></span>
+                    <span>درباره آسود</span>
+                    <span class="divider"></span>
+                    <span>خدمات آسود</span>
+                    <span class="divider"></span>
+                    <span>دریافت برنامه</span>
+                    <span class="divider"></span>
+                    <span>ارتباط با ما</span>
+                </div>
+                
+                <p class="footer-slogan">آسودگی خیال با آسود</p>
+            </footer>
+        </main>
+    </div>
+
+    <script>
+        // Share button functionality and map initialization
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize map if coordinates are available
+            {% if market.location and market.location.latitude and market.location.longitude %}
+            const mapFrame = document.getElementById('mapFrame');
+            const lat = {{ market.location.latitude }};
+            const lon = {{ market.location.longitude }};
+            mapFrame.src = `https://www.openstreetmap.org/export/embed.html?bbox=${lon-0.005},${lat-0.005},${lon+0.005},${lat+0.005}&layer=mapnik&marker=${lat},${lon}`;
+            {% endif %}
+
+            // Share button functionality
+            const shareButton = document.getElementById('shareButton');
+            shareButton.addEventListener('click', async () => {
+                const shareUrl = window.location.href;
+                const shareTitle = 'کارت ویزیت {{ market.name|escapejs }}';
+                const shareText = 'اطلاعات کسب و کار {{ market.name|escapejs }} را مشاهده کنید.';
+
+                // Use modern Web Share API if available
+                if (navigator.share) {
+                    try {
+                        await navigator.share({
+                            title: shareTitle,
+                            text: shareText,
+                            url: shareUrl,
+                        });
+                    } catch (err) {
+                        console.error("Share failed:", err.message);
+                    }
+                } else {
+                    // Fallback for desktop or unsupported browsers
+                    navigator.clipboard.writeText(shareUrl).then(() => {
+                        alert('لینک کپی شد!');
+                    }).catch(() => {
+                        alert(`لینک کارت ویزیت:\n${shareUrl}`);
+                    });
+                }
+            });
+
+            // Update social media links
+            {% if market.contact.messenger_ids.telegram %}
+            document.getElementById('telegramLink').href = 'https://t.me/{{ market.contact.messenger_ids.telegram }}';
+            {% endif %}
+            {% if market.contact.messenger_ids.instagram %}
+            document.getElementById('instagramLink').href = 'https://instagram.com/{{ market.contact.messenger_ids.instagram }}';
+            {% endif %}
+        });
+    </script>
+</body>
+</html>
